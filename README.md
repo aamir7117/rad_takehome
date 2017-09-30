@@ -22,7 +22,7 @@ The following questions intrigued me about this dataset:
 * Fill_rate, True_Value_fill_rate and Cardinality are shown as requested
       * All irrelevant data was removed before calculating True_Value_fill_rate and Cardinality
       * See helper.replace_bad_entries and helper.unique_counter for details
-
+      
 * I tried to find relationships between headcount, time_in_business, revenue and Zipcodes(location)
       * Between just headcount, time_in_business and revenue alone, there is no linear relationship. Location is a key part in untangling these.
       * I explored the connection with location using various plots
