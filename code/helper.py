@@ -1,7 +1,97 @@
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
+from collections import defaultdict
 import re
+
+
+class Region(object):
+    '''
+    This class object defines a region by allowing conditions to define the mask
+    that will be used to filter big_df
+    '''
+
+    def __init__(self, name, big_df):
+        '''
+        name: string identifies of class object
+        big_df: pandas.DataFrame object
+        '''
+        self.name = name
+        self.masks = defaultdict(list)
+        self.masked_items = defaultdict(list)
+        self.big_df = big_df
+
+    def add_category(self,col,value_list):
+        '''
+        col: str, big_df column name
+        value: list, list of values that exist in big_df[col]
+        This method allows the addition of multiple criteria to define a region
+        '''
+        for value in value_list:
+            self.masked_items[col].append(value)
+            mask_lst = self.big_df[col]==value
+            if mask_lst.sum() and len(mask_lst)==len(self.big_df):
+                self.masks[col].append(mask_lst)
+
+    def get_final_mask(self):
+        '''
+        This method returns a mask that when applied to big_df will return only
+        the records that satisfy all the conditions that have been specified
+        for this Region object
+        '''
+        if len(self.masks):
+            all_masks = []
+            for col, mask_lst in self.masks.iteritems():
+                all_masks.append(np.array(mask_lst).sum(axis=0)>0)
+            return np.array(all_masks).sum(axis=0)==len(all_masks)
+
+    def get_df(self):
+        return self.big_df[self.get_final_mask()]
+
+    def get_col_counts(self,col):
+        '''
+        col: str, big_df column name to get value counts of
+        This method returns the value_counts of the column specified
+        '''
+        return self.big_df[self.get_final_mask()][col].value_counts()
+
+
+
+
+def make_USA_divisions(big_df, states_df=True):
+    '''
+    big_df: pandas.DataFrame object
+    This function splits the USA into 9 divisions:
+    Pacific, Mountain, West North Central (WNC), WSC, ESC, ENC,
+    South Atlantic, Middle Atlantic and New England
+    Returns a list of 9 Region class objects
+    '''
+
+    all_states = {
+    'mountain': ['MT','ID','WY','NV','UT','CO','AZ','NM'],
+    'pacific': ['AK','WA','OR','CA'],
+    'westnorthcentral': ['IA','KS','MN','MO','NE','ND','SD'],
+    'westsouthcentral': ['OK','TX','AK','LA'],
+    'eastnorthcentral': ['WI','MI','IL','IN','OH'],
+    'eastsouthcentral': ['KY','TN','AL','MS'],
+    'southatlantic': ['WV','MD','DE','VA','NC','SC','GA','FL'],
+    'middleatlantic': ['PA','NJ','NY'],
+    'newengland': ['ME','VT','NH','MA','RI','CT']
+    }
+
+    all_divisions = []
+
+    for name, states in all_states.iteritems():
+        r = Region(str(name),big_df)
+        r.add_category('state',states)
+        all_divisions.append(r)
+
+    if states_df==True:
+        states = pd.DataFrame(all_states.values(),index=all_states.keys())
+        return all_divisions, states
+    else:
+        return all_divisions
+
 
 def unique_counter(x):
     '''
@@ -10,6 +100,7 @@ def unique_counter(x):
     Use case, set all undesirable values to -1 prior to calling this function
     '''
     return x[x>-1].str.lower().str.replace(' ','').nunique()
+
 
 def replace_bad_entries(df, to_replace=['None','null'], repl_with=-1, \
                         fillna_with=-1,**kwargs):
@@ -29,7 +120,8 @@ def numerize_rth(big_df):
     '''
     big_df: pandas.DataFrame object
     Maps the categorical variables to numeric values
-    Returns nothing as big_df is modified in place, new columns added: time_n, rev_n, hdcnt_n
+    Returns nothing as big_df is modified in place, new columns added:
+    time_n, rev_n, hdcnt_n
     '''
     d_time = {'10+ years':10,'6-10 years':7,'3-5 years':5,'1-2 years':2,-1:-1,
     'Less than a year':-1}
@@ -114,3 +206,16 @@ def join_naics_desc(big_df,naics,return_non_match_cnt=True):
         naics_desc_cols = map(''.join,zip(naics_cols,['_desc']*len(naics_cols)))
         no_match = pd.DataFrame(big_df[naics_desc_cols].isnull().sum())
         return no_match.rename(columns={0:'num_non_matches'})
+
+def common_industries(big_df,division, col):
+    '''
+    division: class Region object
+    col: str, name of column. For example: naics_industries_5_desc
+    This function returns the Percentages more or less common in the specified
+    division than in the United States.
+    '''
+    us = big_df[col]
+    d = division.get_df()[col]
+    normed_us = (us.value_counts()*1.)/(us.notnull().sum())
+    normed_div = ((d.value_counts())*1.)/(d.notnull().sum())
+    return (normed_div - normed_us).sort_values(ascending=False)

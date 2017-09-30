@@ -18,7 +18,7 @@ Seeing this data, the following questions intrigue me:
 
 * Fill_rate, True_Value_fill_rate and Cardinality are shown as requested
   * All irrelevant data as mentioned above was removed before calculating True_Value_fill_rate and Cardinality
-  * See helper_functions.replace_bad_entries and helper_functions.unique_counter for details
+  * See helper.replace_bad_entries and helper.unique_counter for details
 
 * I tried to find relationships between headcount, time_in_business, revenue and Zipcodes(location)
   * There is no linear relationship between just headcount, time_in_business and revenue alone. Location is a key part in untangling these.
@@ -34,7 +34,6 @@ Seeing this data, the following questions intrigue me:
 
   * I added color to the plot which maps to revenue tiers. Shades of pink are high-revenue (Over $100M) and shades of green are mid-range ($2.5M to $100M)
     * The high revenue businesses are exactly co-located with major cities of the US.
-      * The following cities have the highest overall count of high-revenue businesses: NYC, Houston, Chicago, San Diego, LA and Dallas
     * Businesses seem to emanate outward from the cities.
     * Revenue tiers also get lower as you move outward from the cities.
     * The northeast megalopolis, also known as the Boston-Washington corridor, is clearly visible at the top of the East coast, marked by a slanted pink line
@@ -42,6 +41,13 @@ Seeing this data, the following questions intrigue me:
       * The Headquarters of 162 of the Fortune 500 companies are located here
       * It is the center of the global hedge fund industry
       * Academically, the region is home to six of the eight Ivy League universities
+
+  * The Boston-Washington Corridor's economy produces $3.75 trillion which is approx 20% of the US GDP
+    * src: http://martinprosperity.org/media/Mega%20Regions_Insight_14-03-05.pdf
+    * Our estimate comes reasonably close at 2.2 trillion. This could be for two reasons:
+      * The data for businesses' revenue is bucketized into vague ranges like 'Over 1 Billion'
+      * It is possible that we don't have records of all the businesses actually in that region
+      * We will explore this area more with Naics codes later
 
   * I added headcount to the plot, using size of the points
     * Smaller points means less headcount. Larger means more
