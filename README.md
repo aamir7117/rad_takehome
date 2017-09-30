@@ -30,11 +30,11 @@ The following questions intrigued me about this dataset:
 * Location: All data is for US businesses. There are about 10 records that belong to Puerto Rico and US Virgin Islands. I ignored them.
       * I mapped the Zipcodes to their corresponding Latitudes/Longitudes using a csv file from here https://www.aggdata.com/node/86
       * Using this data, I filled 209 missing city and state records
-
-    * I plotted the lat/long of each business to see their spatial distribution.
+      * I plotted the lat/long of each business to see their spatial distribution.
       * A US mainland outline is clearly observable with some outliers in Alaska and Hawaii.
       * There are many more businesses on the Eastern half of the US than the Western half.
-      * I added color to the plot which maps to revenue tiers. Shades of pink are high-revenue (Over $100M) and shades of green are mid-range ($2.5M to $100M)
+
+* Revenue: I added color to the plot which maps to revenue tiers. Shades of pink are high-revenue (Over $100M) and shades of green are mid-range ($2.5M to $100M)
       * The high revenue businesses are exactly co-located with major cities of the US.
       * Businesses seem to emanate outward from the cities.
       * Revenue tiers also get lower as you move outward from the cities.
