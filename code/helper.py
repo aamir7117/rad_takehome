@@ -24,7 +24,7 @@ class Region(object):
     def add_category(self,col,value_list):
         '''
         col: str, big_df column name
-        value: list, list of values that exist in big_df[col]
+        value_list: list, containing values that exist in big_df[col]
         This method allows the addition of multiple criteria to define a region
         '''
         for value in value_list:
@@ -46,6 +46,9 @@ class Region(object):
             return np.array(all_masks).sum(axis=0)==len(all_masks)
 
     def get_df(self):
+        '''
+        Returns filtered big_df using self.get_final_mask()
+        '''
         return self.big_df[self.get_final_mask()]
 
     def get_col_counts(self,col):
@@ -123,6 +126,7 @@ def numerize_rth(big_df):
     Returns nothing as big_df is modified in place, new columns added:
     time_n, rev_n, hdcnt_n
     '''
+    # dictionaries to numerize categorical columns
     d_time = {'10+ years':10,'6-10 years':7,'3-5 years':5,'1-2 years':2,-1:-1,
     'Less than a year':-1}
     rev_order = ['Less Than $500,000', '$500,000 to $1 Million',
@@ -133,6 +137,8 @@ def numerize_rth(big_df):
     d_hdcnt = {'1 to 4':4,'5 to 9':9,'10 to 19':19,'20 to 49':49,'50 to 99':99,
     '100 to 249':249, '250 to 499':499,'500 to 999':999,
     'Over 1,000':1999,-1:-1}
+
+    # New columns with numerical data representing categories
     big_df['time_n'] = big_df.time_in_business.map(d_time)
     big_df['rev_n'] = big_df.revenue.map(d_rev)
     big_df['hdcnt_n'] = big_df.headcount.map(d_hdcnt)
