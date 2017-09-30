@@ -1,3 +1,5 @@
+This README is meant to be accompanies by code/Aamir_radius_takehome.ipynb
+
 ## Vision
 Seeing this data, the following questions intrigue me:
 1. Geo-location of business and how it relates to other fields
