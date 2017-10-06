@@ -64,6 +64,8 @@ class Region(object):
 def make_USA_divisions(big_df, states_df=True):
     '''
     big_df: pandas.DataFrame object
+    state_df: bool, True (default) returns an additional dataframe,
+              showing the state abbreviations in each Region object.
     This function splits the USA into 9 divisions:
     Pacific, Mountain, West North Central (WNC), WSC, ESC, ENC,
     South Atlantic, Middle Atlantic and New England
@@ -129,10 +131,6 @@ def numerize_rth(big_df):
     # dictionaries to numerize categorical columns
     d_time = {'10+ years':10,'6-10 years':7,'3-5 years':5,'1-2 years':2,-1:-1,
     'Less than a year':-1}
-    rev_order = ['Less Than $500,000', '$500,000 to $1 Million',
-    '$1 to 2.5 Million', '$2.5 to 5 Million', '$5 to 10 Million',
-    '$10 to 20 Million', '$20 to 50 Million', '$50 to 100 Million',
-    '$100 to 500 Million', 'Over $500 Million', 'Over $1 Billion']
     d_rev = dict(zip(rev_order+[-1],[0.5,1,2.5,5,10,20,50,100,500,750,1000,-1]))
     d_hdcnt = {'1 to 4':4,'5 to 9':9,'10 to 19':19,'20 to 49':49,'50 to 99':99,
     '100 to 249':249, '250 to 499':499,'500 to 999':999,
@@ -165,7 +163,8 @@ def show_correlations(big_df,cols):
     cols = cols
     scaler = MinMaxScaler()
     no_miss_rth_df = big_df[cols][(big_df[cols]>-1).sum(axis=1)==len(cols)]
-    no_miss_rth_df = pd.DataFrame(no_miss_rth_df)
+    no_miss_rth_df = pd.DataFrame(scaler.fit_transform(no_miss_rth_df))
+    no_miss_rth_df = no_miss_rth_df.rename(columns=dict(zip(range(7),cols)))
 
     return no_miss_rth_df.corr().loc[['time_n','rev_n','hdcnt_n'],cols]
 
@@ -173,6 +172,7 @@ def join_naics_desc(big_df,naics,return_non_match_cnt=True):
     '''
     big_df: pandas.DataFrame object
     naics: pandas.DataFrame object, read from csv at https://www.census.gov/eos/www/naics/2017NAICS/2-6%20digit_2017_Codes.xlsx
+    return_non_match_cnt: bool, True (default) will returns a dataframe object showing the non-matched entries in each naics column
     This function breaksout the codes into 2-6 digits and adds their descriptions into big_df
     Returns nothing as big_df is modified in place, new columns added:
     naics_sector, naics_sector_desc
@@ -198,7 +198,7 @@ def join_naics_desc(big_df,naics,return_non_match_cnt=True):
 
     # Add all broken out codes and their corresponding descriptions to big_df
     naics_cols = ['naics_sector','naics_subsector','naics_industry_grp', \
-    'naics_industries_5','naics_industries_6']
+                  'naics_industries_5','naics_industries_6']
     regexes = [r'(..)',r'(...)',r'(....)',r'(.....)',r'(......)']
 
     for i in range(len(naics_cols)):
@@ -215,6 +215,7 @@ def join_naics_desc(big_df,naics,return_non_match_cnt=True):
 
 def common_industries(big_df,division, col):
     '''
+    big_df: pandas.DataFrame object
     division: class Region object
     col: str, name of column. For example: naics_industries_5_desc
     This function returns the Percentages more or less common in the specified

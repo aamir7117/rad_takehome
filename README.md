@@ -1,4 +1,4 @@
-This README is meant to be accompanies by file, 'code/Aamir_radius_takehome.ipynb'
+This README is meant to be accompanied by the file, 'code/Aamir_radius_takehome.ipynb'
 
 ## Vision
 The following questions intrigued me about this dataset:
@@ -38,14 +38,14 @@ The following questions intrigued me about this dataset:
   * The high revenue businesses are exactly co-located with major cities of the US.
   * Businesses seem to emanate outward from the cities.
   * Revenue tiers also get lower as you move outward from the cities.
-  * The northeast megalopolis, also known as the Boston-Washington corridor, is clearly visible at the top of the East coast, marked by a slanted pink line
+  * Fun Fact: The northeast megalopolis, also known as the Boston-Washington corridor, is clearly visible at the top of the East coast, marked by a slanted pink line
   * This region accounts for 20% of the United States GDP, has 162 out of Fortune 500 companies and is the center of the hedge fund industries
 
 * Headcount: I added headcount to the plot, using size of the points
   * Smaller points means less headcount. Larger means more
   * Once again, the major cities stand out
   * However, notice the spread of pink dots shrink in relation to the green dots, especially in the dense areas
-  * This means that businesses in the green range (\$2.5Mto \$100M) typically have more employees than businesses in the pink range (Over \$100M)
+  * This means that businesses in the green range ($2.5Mto $100M) typically have more employees than businesses in the pink range (Over $100M)
   * I suspect the type of industry has a big impact on how many employees a business has. So it would make a good feature to explore with more time
 
 * category_code: NAICS code. First 2 digits indicate sector, 3rd is subsector, 4th is industry group, 5th and 6th are specific industries
@@ -62,5 +62,16 @@ The following questions intrigued me about this dataset:
 
 * Different results than StatisticalAtlas
   * StatisticalAtlas has 140 million records. My dataset has only 1 million.
-  * See below for overall US percentages per sector. Mine and StatAtlas' are different
+  * See bar plot in ipynb for overall US percentages per sector. Mine and StatAtlas' are different
     * This is likely due to random sampling to obtain our dataset
+
+* Relative Industry Plots
+  * For each sector, I normalized Industry count by the region and subracted the normalized US sector count for that sector
+  * This nuances the subtle differences between regions' industry sectors compared to the national norm
+  * StatsAtlas' relative industry plot is shown for one of the divisions, Mountain
+      * Compared to my 1st barplot below (also for Mountain), the heirarchy of the sectors is noticeably different once again
+      * Upon further checking, each of the regions' top sectors came out differently from StatsAtlas'
+      * I suspect that this is once again due to my data being a small random sample of the dataset StatsAtlas has
+      * However, the data as it stands now suggests that the West South Central, which consists of TX, OK, AK, and Louisiana,
+        has more businesses in Construction and Wholesale trade compared to the rest of the nation. Having lived in Texas for
+        over 10 years, this sounds reasonable to me.
